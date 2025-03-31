@@ -14,7 +14,7 @@ class TestDocument:
             "document_type": DocumentTypeEnum.CONTRACT,
         }
 
-    def test_create_document(self, document_payload):
+    def test_create_object(self, document_payload):
         document = Document(
             title=document_payload["title"],
             content=document_payload["content"],

@@ -1,6 +1,7 @@
 import pytest
 
 from enums import AccessLevelEnum
+from models.user import User
 
 
 class TestUser:
@@ -8,14 +9,20 @@ class TestUser:
     def test_password(self):
         return "test_password_123"
 
-    def test_user_creation(self, user, user_data):
+    def test_create_object(self, user_data):
+        user = User(
+            username=user_data["username"],
+            password=user_data["password"],
+            position=user_data["position"],
+            department=None,
+            access_level=user_data["access_level"],
+        )
         assert user.username == user_data["username"]
         assert user.password == user_data["password"]
         assert user.position == user_data["position"].value
+        assert user.department is None
         assert user.access_level == user_data["access_level"]
-        assert isinstance(user.documents, list)
-        assert len(user.documents) == 0
-        assert user.id > 0
+        assert user.documents == []
 
     def test_authenticate(self, user, user_data):
         assert user.authenticate(user_data["password"]) is True

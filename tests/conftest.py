@@ -36,7 +36,6 @@ def department(department_data, user):
     department = Department(
         name=department_data['name'],
         head=user,
-        members=[user],
     )
     user.department = department
     return department
