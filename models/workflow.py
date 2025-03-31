@@ -1,15 +1,15 @@
 from typing import List, Dict
 
 from .document import Document
-from enums import WorkflowStatusEnum, DocumentStatusEnum
+from enums import WorkflowStatusEnum, DocumentStatusEnum, DocumentTypeEnum, PositionEnum
 from .user import User
 
 
 class Workflow:
     global_workflow_id = 0
-    ALLOWED_POSITIONS = ["Admin", "Manager"]
+    ALLOWED_POSITIONS = [PositionEnum.MANAGER, PositionEnum.HEAD, PositionEnum.ADMIN]
 
-    def __init__(self, document_type: str, workflow_steps: List[Dict]) -> None:
+    def __init__(self, document_type: DocumentTypeEnum, workflow_steps: List[Dict]) -> None:
         """
         Initialize the workflow for a specific document type.
         """

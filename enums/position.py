@@ -7,4 +7,5 @@ class PositionEnum(Enum):
     """
     ADMIN = "Admin"
     MANAGER = "Manager"
+    HEAD = "Head of Department"
     EMPLOYEE = "Employee"
