@@ -5,6 +5,5 @@ class SignatureTypeEnum(Enum):
     """
     Enum representing different types of electronic signatures.
     """
-    SIMPLE = "Simple"
-    ADVANCED = "Advanced"
-    QUALIFIED = "Qualified"
+    DIGITAL = "Digital"
+    HANDWRITTEN = "Handwritten"
