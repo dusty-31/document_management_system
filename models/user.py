@@ -1,3 +1,5 @@
+from typing import Union
+
 from enums import PositionEnum, AccessLevelEnum
 from models.department import Department
 
@@ -10,7 +12,7 @@ class User:
             username: str,
             password: str,
             position: PositionEnum,
-            department: Department,
+            department: Union[Department, None],  # None if not assigned to a department
             access_level: AccessLevelEnum,
     ) -> None:
         self.id = self._get_user_id()
