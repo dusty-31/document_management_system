@@ -34,6 +34,6 @@ class AccessControl:
         Check if a user has the required access level for a document.
         """
         if document.id in self.document_access and user.id in self.document_access[document.id]:
-            user_level = self.document_access[document.id][user.id]
+            user_level = self.document_access[document.id][user.id].value
             return user_level >= required_level.value
         return False
