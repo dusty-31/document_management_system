@@ -15,7 +15,7 @@ class TestTask:
     def task(self, document, user, task_deadline):
         return Task(document=document, deadline=task_deadline, assignee=user)
 
-    def test_task_creation(self, task, document, user, task_deadline):
+    def test_create_object(self, task, document, user, task_deadline):
         task_instance = Task(
             document=document,
             deadline=task_deadline,

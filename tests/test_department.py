@@ -18,7 +18,7 @@ class TestDepartment:
             access_level=user_data["access_level"]
         )
 
-    def test_department_creation(self, user):
+    def test_create_object(self, user):
         department = Department(
             name="Test Department",
             head=user,

@@ -25,7 +25,7 @@ class TestWorkflow:
             "workflow_steps": workflow_steps,
         }
 
-    def test_workflow_creation(self, workflow, workflow_steps):
+    def test_create_object(self, workflow, workflow_steps):
         workflow_instance = Workflow(
             document_type=DocumentTypeEnum.CONTRACT,
             workflow_steps=workflow_steps
