@@ -25,15 +25,6 @@ class TestWorkflow:
             "workflow_steps": workflow_steps,
         }
 
-    @pytest.fixture
-    def document(self, user):
-        return Document(
-            title="Test Document",
-            content="Test content",
-            author=user,
-            document_type=DocumentTypeEnum.CONTRACT
-        )
-
     def test_workflow_creation(self, workflow, workflow_steps):
         workflow_instance = Workflow(
             document_type=DocumentTypeEnum.CONTRACT,
