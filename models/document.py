@@ -43,7 +43,7 @@ class Document:
             "timestamp": datetime.now(),
         })
 
-    def update_content(self, content: str, editor: User) -> None:
+    def update_content(self, new_content: str, editor: User) -> None:
         """
         Update the content of the document.
         """
@@ -51,7 +51,7 @@ class Document:
         if self.status in self.BLOCKED_UPDATE_STATUSES:
             raise ValueError(f"Cannot edit an {self.status.value} document.")
 
-        self.content = content
+        self.content = new_content
         self.last_modified_date = datetime.now()
         self.version += 1
         self.add_history_entry(entry_message=f"Content updated by {editor}.")
@@ -68,7 +68,7 @@ class Document:
         self.status = new_status
         self.last_modified_date = datetime.now()
         self.add_history_entry(
-            entry_message=f"Status changed from \'{old_status.value}\' to \'{new_status.value}\' by {editor}.",
+            entry_message=f"Status changed from \'{old_status.value}\' to \'{new_status.value}\' by {editor.username}.",
         )
 
     def get_history(self) -> List[Dict[str, Union[str, datetime]]]:
