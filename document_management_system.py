@@ -3,11 +3,12 @@ from typing import List
 
 from models.access_control import AccessControl
 from models.document import Document
-from enums import AccessLevelEnum, ReportTypeEnum
+from enums import AccessLevelEnum, ReportTypeEnum, DocumentTypeEnum
 from models.report import Report
 from models.search import Search
 from models.task import Task
 from models.user import User
+from models.workflow import Workflow
 
 
 class SingletonMeta(type):
@@ -52,11 +53,11 @@ class DocumentManagementSystem(metaclass=SingletonMeta):
                 return True
         return False
 
-    def create_document(self, title: str, content: str, author: User) -> Document:
+    def create_document(self, title: str, content: str, author: User, document_type: DocumentTypeEnum) -> Document:
         """
         Create a new document in the system.
         """
-        new_document = Document(title, content, author)
+        new_document = Document(title, content, author, document_type)
         self._documents.append(new_document)
         self._access_control.grant_access(document=new_document, user=author, level=AccessLevelEnum.OWNER)
         print(f"Document '{title}' created successfully.")
@@ -73,10 +74,10 @@ class DocumentManagementSystem(metaclass=SingletonMeta):
 
     def generate_report(self, report_type: ReportTypeEnum, start_date: datetime, end_date: datetime) -> Report:
         report = Report(report_type=report_type, period=(start_date, end_date))
-        report.generate_report(self._documents, self._users)
+        report.generate_report(self._documents)
         return report
 
-    def search_documents(self, query: str) -> list:
+    def search_documents(self) -> list:
         """
         Search for documents based on a query string.
         """
@@ -100,3 +101,36 @@ class DocumentManagementSystem(metaclass=SingletonMeta):
             raise ValueError("Email already exists.")
         else:
             return True
+
+    def create_workflow(self, document_type: DocumentTypeEnum, workflow_steps: List[dict]) -> "Workflow":
+        """
+        Create a new workflow for a specific document type.
+        """
+
+        workflow = Workflow(document_type=document_type, workflow_steps=workflow_steps)
+        self._workflows.append(workflow)
+        return workflow
+
+    def assign_workflow_to_document(self, document: Document, workflow: "Workflow", user: User) -> bool:
+        """
+        Assign a workflow to a document and start the workflow process.
+        """
+
+        if document not in self._documents:
+            raise ValueError("Document not found in the system.")
+
+        if workflow not in self._workflows:
+            raise ValueError("Workflow not found in the system.")
+
+        if not self._access_control.check_access(document, user, AccessLevelEnum.READ_WRITE):
+            raise PermissionError(f"User {user.username} does not have permission to assign workflow.")
+
+        document.add_history_entry(f"Workflow assigned by {user.username}.")
+
+        return True
+
+    def get_workflows_by_document_type(self, document_type: DocumentTypeEnum) -> List["Workflow"]:
+        """
+        Get all workflows for a specific document type.
+        """
+        return [workflow for workflow in self._workflows if workflow.document_type == document_type]
