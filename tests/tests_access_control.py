@@ -20,10 +20,11 @@ class TestAccessControl:
             access_level=user_data["access_level"],
         )
 
-    def test_access_control_creation(self, access_control):
-        assert hasattr(access_control, 'document_access')
-        assert isinstance(access_control.document_access, dict)
-        assert len(access_control.document_access) == 0
+    def test_create_object(self):
+        access_control_instance = AccessControl()
+        assert hasattr(access_control_instance, 'document_access')
+        assert isinstance(access_control_instance.document_access, dict)
+        assert len(access_control_instance.document_access) == 0
 
     def test_grant_access(self, access_control, document, user):
         initial_history_length = len(document.history)

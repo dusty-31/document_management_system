@@ -3,7 +3,6 @@ from typing import Tuple, Dict, Any, List
 
 from .document import Document
 from enums import ReportTypeEnum, ExportFormatEnum
-from .user import User
 
 
 class Report:
@@ -18,11 +17,11 @@ class Report:
         self.parameters = parameters if parameters else {}
         self.data = None  # Report data after generation
 
-    def generate_report(self, documents: List[Document], users: List[User]) -> str:
+    def generate_report(self, documents: List[Document]) -> str:
         """
         Generate the report based on the report type and period.
         """
-        if self.report_type == "document_status":
+        if self.report_type == ReportTypeEnum.DOCUMENT_STATUS:
             return self._generate_document_status_report(documents)
         else:
             return f"Unsupported report type: {self.report_type}"
