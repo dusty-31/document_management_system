@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Set
+from typing import List, Set, Tuple, Dict
 
 from models.access_control import AccessControl
 from models.document import Document
@@ -10,6 +10,7 @@ from models.task import Task
 from models.user import User
 from models.workflow import Workflow
 from services.document_analytics import DocumentAnalytics
+from services.version_control.version_control_system import VersionControl
 
 
 class SingletonMeta(type):
@@ -34,6 +35,7 @@ class DocumentManagementSystem(metaclass=SingletonMeta):
         self._search_engine = Search()
         self._access_control = AccessControl()
         self._document_analytics = DocumentAnalytics()
+        self._version_control = VersionControl()
 
     def add_user(self, new_user: User) -> None:
         """
@@ -64,8 +66,11 @@ class DocumentManagementSystem(metaclass=SingletonMeta):
         self._access_control.grant_access(document=new_document, user=author, level=AccessLevelEnum.OWNER)
         print(f"Document '{title}' created successfully.")
 
+        # Initialize version control for the new document
+        self._version_control.initialize_version_control(new_document)
         # Analyze the document and extract keywords
         self._document_analytics.analyze_document(new_document)
+
         return new_document
 
     def assign_task(self, document: Document, assignee: User, deadline: datetime) -> Task:
@@ -140,7 +145,8 @@ class DocumentManagementSystem(metaclass=SingletonMeta):
         """
         return [workflow for workflow in self._workflows if workflow.document_type == document_type]
 
-    # Document Analytics Methods
+        # Document Analytics Methods
+
     def analyze_document(self, document: Document) -> Set[str]:
         """
         Analyzes the document and extracts keywords.
@@ -160,3 +166,28 @@ class DocumentManagementSystem(metaclass=SingletonMeta):
         """
         related_ids = self._document_analytics.find_related_documents(document)
         return [doc for doc in self._documents if doc.id in related_ids]
+
+    def create_branch(self, document: Document, branch_name: str, user: User) -> bool:
+        """
+        Create a new branch for the document.
+        """
+        return self._version_control.create_branch(document, branch_name, user)
+
+    def commit_changes(self, document: Document, user: User, description: str) -> bool:
+        """
+        Save changes to the current active branch.
+        """
+        return self._version_control.commit_changes(document, user, description)
+
+    def merge_branches(self, document: Document, source_branch: str, target_branch: str, user: User) -> Tuple[
+        bool, str]:
+        """
+        Merge changes from one branch to another.
+        """
+        return self._version_control.merge_branches(document, source_branch, target_branch, user)
+
+    def get_document_version_history(self, document: Document) -> List[Dict]:
+        """
+        Get the version history of a document.
+        """
+        return self._version_control.get_version_history(document)

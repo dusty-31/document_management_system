@@ -147,3 +147,120 @@ class TestDocumentManagementSystem:
 
         assert len(report_workflows) == 1
         assert report_workflow in report_workflows
+
+    def test_create_document_with_version_control(self, dms, user):
+        """
+        Test that a new document is automatically initialized with version control.
+        """
+
+        dms.add_user(user)
+        document = dms.create_document(
+            title="Version Control Test",
+            content="This is a test document for version control.",
+            author=user,
+            document_type=DocumentTypeEnum.CONTRACT,
+        )
+
+        assert document.id in dms._version_control.documents
+        assert "main" in dms._version_control.documents[document.id]
+        assert len(dms._version_control.documents[document.id]["main"]) == 1
+        assert dms._version_control.documents[document.id]["main"][0]["content"] == document.content
+        assert any("Version control system initialized" in entry["entry_message"] for entry in document.history)
+
+    def test_create_branch(self, dms, user):
+        """
+        Test creating a branch through DMS.
+        """
+        dms.add_user(user)
+        document = dms.create_document(
+            title="Branch Test",
+            content="This is a test document for branch creation.",
+            author=user,
+            document_type=DocumentTypeEnum.CONTRACT,
+        )
+
+        result = dms.create_branch(document, "feature", user)
+
+        assert result is True
+        assert "feature" in dms._version_control.documents[document.id]
+        assert len(dms._version_control.documents[document.id]["feature"]) == 1
+        assert dms._version_control.documents[document.id]["feature"][0]["content"] == document.content
+        assert any("Branch 'feature' created by" in entry["entry_message"] for entry in document.history)
+
+    def test_commit_changes(self, dms, user):
+        """
+        Test committing changes through DMS.
+        """
+        dms.add_user(user)
+        document = dms.create_document(
+            title="Commit Test",
+            content="This is the initial content.",
+            author=user,
+            document_type=DocumentTypeEnum.CONTRACT,
+        )
+
+        document.content = "This is the updated content."
+        result = dms.commit_changes(document, user, "Update content")
+
+        assert result is True
+        assert len(dms._version_control.documents[document.id]["main"]) == 2
+        assert dms._version_control.documents[document.id]["main"][1]["content"] == "This is the updated content."
+        assert dms._version_control.documents[document.id]["main"][1]["description"] == "Update content"
+        assert any("Version 2 saved in branch 'main'" in entry["entry_message"] for entry in document.history)
+
+    def test_merge_branches(self, dms, user):
+        """
+        Test merging branches through DMS.
+        """
+        dms.add_user(user)
+        document = dms.create_document(
+            title="Merge Test",
+            content="This is the initial content.",
+            author=user,
+            document_type=DocumentTypeEnum.CONTRACT,
+        )
+
+        dms.create_branch(document, "feature", user)
+        dms._version_control.switch_branch(document, "feature", user)
+        document.content = "This is content on the feature branch."
+        dms.commit_changes(document, user, "Update content on feature branch")
+        dms._version_control.switch_branch(document, "main", user)
+        result, message = dms.merge_branches(document, "feature", "main", user)
+
+        assert result is True
+        assert "successfully" in message
+        assert len(dms._version_control.documents[document.id]["main"]) == 2
+        assert dms._version_control.documents[document.id]["main"][1][
+                   "content"] == "This is content on the feature branch."
+
+        assert any("Merged branch 'feature' into 'main'" in entry["entry_message"] for entry in document.history)
+
+    def test_get_document_history(self, dms, user):
+        """
+        Test getting document history through DMS.
+        """
+        dms.add_user(user)
+        document = dms.create_document(
+            title="History Test",
+            content="This is the initial content.",
+            author=user,
+            document_type=DocumentTypeEnum.CONTRACT,
+        )
+
+        document.content = "First update."
+        dms.commit_changes(document, user, "First change")
+
+        document.content = "Second update."
+        dms.commit_changes(document, user, "Second change")
+
+        history = dms.get_document_version_history(document)
+
+        assert len(history) == 3
+        assert history[0]["version"] == 1
+        assert history[0]["content"] == "This is the initial content."
+        assert history[1]["version"] == 2
+        assert history[1]["content"] == "First update."
+        assert history[1]["description"] == "First change"
+        assert history[2]["version"] == 3
+        assert history[2]["content"] == "Second update."
+        assert history[2]["description"] == "Second change"
