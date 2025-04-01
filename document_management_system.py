@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List
+from typing import List, Set
 
 from models.access_control import AccessControl
 from models.document import Document
@@ -9,6 +9,7 @@ from models.search import Search
 from models.task import Task
 from models.user import User
 from models.workflow import Workflow
+from services.document_analytics import DocumentAnalytics
 
 
 class SingletonMeta(type):
@@ -32,6 +33,7 @@ class DocumentManagementSystem(metaclass=SingletonMeta):
         self._tasks = []
         self._search_engine = Search()
         self._access_control = AccessControl()
+        self._document_analytics = DocumentAnalytics()
 
     def add_user(self, new_user: User) -> None:
         """
@@ -61,6 +63,9 @@ class DocumentManagementSystem(metaclass=SingletonMeta):
         self._documents.append(new_document)
         self._access_control.grant_access(document=new_document, user=author, level=AccessLevelEnum.OWNER)
         print(f"Document '{title}' created successfully.")
+
+        # Analyze the document and extract keywords
+        self._document_analytics.analyze_document(new_document)
         return new_document
 
     def assign_task(self, document: Document, assignee: User, deadline: datetime) -> Task:
@@ -134,3 +139,24 @@ class DocumentManagementSystem(metaclass=SingletonMeta):
         Get all workflows for a specific document type.
         """
         return [workflow for workflow in self._workflows if workflow.document_type == document_type]
+
+    # Document Analytics Methods
+    def analyze_document(self, document: Document) -> Set[str]:
+        """
+        Analyzes the document and extracts keywords.
+        """
+        return self._document_analytics.analyze_document(document)
+
+    def find_document_duplicates(self, document: Document) -> List[Document]:
+        """
+        Finds duplicate documents based on the analyzed keywords.
+        """
+        duplicate_ids = self._document_analytics.find_duplicates(document)
+        return [doc for doc in self._documents if doc.id in duplicate_ids]
+
+    def find_related_documents(self, document: Document) -> List[Document]:
+        """
+        Finds related documents based on the analyzed keywords.
+        """
+        related_ids = self._document_analytics.find_related_documents(document)
+        return [doc for doc in self._documents if doc.id in related_ids]
