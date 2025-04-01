@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Set, Tuple, Dict
+from typing import List, Set, Tuple, Dict, Any, Optional
 
 from models.access_control import AccessControl
 from models.document import Document
@@ -10,6 +10,7 @@ from models.task import Task
 from models.user import User
 from models.workflow import Workflow
 from services.document_analytics import DocumentAnalytics
+from services.external_integration import ExternalIntegration
 from services.version_control.version_control_system import VersionControl
 
 
@@ -36,6 +37,7 @@ class DocumentManagementSystem(metaclass=SingletonMeta):
         self._access_control = AccessControl()
         self._document_analytics = DocumentAnalytics()
         self._version_control = VersionControl()
+        self._external_integration = ExternalIntegration()
 
     def add_user(self, new_user: User) -> None:
         """
@@ -191,3 +193,26 @@ class DocumentManagementSystem(metaclass=SingletonMeta):
         Get the version history of a document.
         """
         return self._version_control.get_version_history(document)
+
+    def export_document_to_external_system(self, document: Document, system_type: str, user: User) -> Dict[str, Any]:
+        """
+        Exports a document to an external system.
+        """
+        return self._external_integration.export_document(document, system_type, user)
+
+    def import_document_from_external_system(self, system_type: str, external_id: str, user: User) -> Optional[Document]:
+        """
+        Imports a document from an external system.
+        """
+        document = self._external_integration.import_document(system_type, external_id, user)
+        if document:
+            self._documents.append(document)
+            self._access_control.grant_access(document=document, user=user, level=AccessLevelEnum.OWNER)
+
+            if hasattr(self, '_version_control'):
+                self._version_control.initialize_version_control(document)
+
+            if hasattr(self, '_document_analytics'):
+                self._document_analytics.analyze_document(document)
+
+        return document

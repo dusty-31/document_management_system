@@ -264,3 +264,38 @@ class TestDocumentManagementSystem:
         assert history[2]["version"] == 3
         assert history[2]["content"] == "Second update."
         assert history[2]["description"] == "Second change"
+
+    def test_export_document_to_external_system(self, dms, document, user):
+        """
+        Test exporting document to external system through DMS.
+        """
+        dms.add_user(user)
+        dms._documents.append(document)
+        result = dms.export_document_to_external_system(document, 'system1', user)
+
+        assert result['success'] is True
+        assert f'Document {document.title} successfully exported' in result['message']
+        assert any(
+            f"Document exported to system1 by {user.username}" in entry["entry_message"] for entry in document.history
+        )
+
+    def test_import_document_from_external_system(self, dms, user, document):
+        """
+        Test importing document from external system through DMS.
+        """
+        dms.add_user(user)
+
+        initial_document_count = len(dms._documents)
+        document = dms.import_document_from_external_system('system1', 'external_id_123', user)
+
+        assert document is not None
+        assert len(dms._documents) == initial_document_count + 1
+        assert document in dms._documents
+        assert 'Imported from system1' in document.title
+        assert any(f"Document imported from system1 by {user.username}" in entry["entry_message"]
+                   for entry in document.history)
+
+        assert dms._access_control.check_access(document, user, AccessLevelEnum.OWNER)
+
+        if hasattr(dms, '_version_control'):
+            assert document.id in dms._version_control.documents
