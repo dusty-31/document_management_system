@@ -1,4 +1,4 @@
-from typing import List, TYPE_CHECKING
+from typing import List, TYPE_CHECKING, Union
 
 if TYPE_CHECKING:
     from models.document import Document
@@ -6,7 +6,7 @@ if TYPE_CHECKING:
 
 
 class Department:
-    def __init__(self, name: str, head: 'User', members: List['User'] = None) -> None:
+    def __init__(self, name: str, head: Union['User', None], members: List['User'] = None) -> None:
         if members is None:
             members = []
 

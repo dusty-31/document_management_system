@@ -43,9 +43,9 @@ class DocumentManagementSystem(metaclass=SingletonMeta):
         """
         Add a new user to the system.
         """
-        if self._validate_user(new_user):
-            self._users.append(new_user)
-            print(f"User {new_user.username} added successfully.")
+        # if self._validate_user(new_user):
+        self._users.append(new_user)
+        print(f"User {new_user.username} added successfully.")
 
     def remove_user(self, user_id: int) -> bool:
         """
