@@ -41,9 +41,6 @@ class TestVersionControl:
         return VersionControl()
 
     def test_create_version_control(self):
-        """
-        Test creating a VersionControl object.
-        """
         version_control = VersionControl()
 
         assert version_control is not None
@@ -53,9 +50,6 @@ class TestVersionControl:
         assert isinstance(version_control.locks, dict)
 
     def test_initialize_version_control(self, version_control, document):
-        """
-        Test initializing version control for a document.
-        """
         version_control.initialize_version_control(document)
 
         assert document.id in version_control.documents
@@ -67,9 +61,6 @@ class TestVersionControl:
         assert any("Version control system initialized" in entry["entry_message"] for entry in document.history)
 
     def test_create_branch(self, version_control, document, user):
-        """
-        Test creating a new branch for a document.
-        """
         version_control.initialize_version_control(document)
         result = version_control.create_branch(document, "feature", user)
 
@@ -80,9 +71,6 @@ class TestVersionControl:
         assert any("Branch 'feature' created by" in entry["entry_message"] for entry in document.history)
 
     def test_switch_branch(self, version_control, document, user):
-        """
-        Test switching to another branch.
-        """
         version_control.initialize_version_control(document)
         version_control.create_branch(document, "feature", user)
 
@@ -100,9 +88,6 @@ class TestVersionControl:
         assert any("Switched to branch 'main' by" in entry["entry_message"] for entry in document.history)
 
     def test_commit_changes(self, version_control, document, user):
-        """
-        Test committing changes to a document.
-        """
         version_control.initialize_version_control(document)
 
         document.content = "This is the updated content."
@@ -116,9 +101,6 @@ class TestVersionControl:
         assert any("Version 2 saved in branch 'main' by" in entry["entry_message"] for entry in document.history)
 
     def test_merge_branches(self, version_control, document, user):
-        """
-        Test merging branches.
-        """
         version_control.initialize_version_control(document)
         version_control.create_branch(document, "feature", user)
         version_control.switch_branch(document, "feature", user)
@@ -135,9 +117,6 @@ class TestVersionControl:
         assert any("Merged branch 'feature' into 'main' by" in entry["entry_message"] for entry in document.history)
 
     def test_get_version_history(self, version_control, document, user):
-        """
-        Test getting version history of a document.
-        """
         version_control.initialize_version_control(document)
 
         document.content = "This is the first update."

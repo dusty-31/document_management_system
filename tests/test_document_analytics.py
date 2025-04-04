@@ -30,9 +30,6 @@ class TestDocumentAnalytics:
         return DocumentAnalytics()
 
     def test_create_object(self):
-        """
-        Test creation of DocumentAnalytics object.
-        """
         analytics = DocumentAnalytics()
 
         assert analytics is not None
@@ -42,9 +39,6 @@ class TestDocumentAnalytics:
         assert isinstance(analytics.document_categories, dict)
 
     def test_analyze_document(self, document_analytics, document):
-        """
-        Test document analysis functionality.
-        """
         keywords = document_analytics.analyze_document(document)
 
         assert keywords is not None
@@ -54,9 +48,6 @@ class TestDocumentAnalytics:
         assert any("analyzed and classified" in entry["entry_message"] for entry in document.history)
 
     def test_extract_keywords(self, document_analytics, document):
-        """
-        Test keyword extraction from document content.
-        """
         keywords = document_analytics._extract_keywords(document.content)
 
         assert isinstance(keywords, set)
@@ -64,9 +55,6 @@ class TestDocumentAnalytics:
         assert any(keyword in keywords for keyword in ["financial", "report", "budget", "expense"])
 
     def test_categorize_document(self, document_analytics, document):
-        """
-        Test document categorization based on keywords.
-        """
         keywords = document_analytics._extract_keywords(document.content)
         category = document_analytics._categorize_document(keywords)
 
@@ -75,9 +63,6 @@ class TestDocumentAnalytics:
         assert category == "Financial"
 
     def test_find_duplicates(self, document_analytics, document, user):
-        """
-        Test finding document duplicates.
-        """
         similar_doc = Document(
             title="Similar Financial Report",
             content="This is a financial report with budget planning and expense analysis.",
@@ -93,9 +78,6 @@ class TestDocumentAnalytics:
         assert similar_doc.id in duplicates
 
     def test_find_related_documents(self, document_analytics, document, user):
-        """
-        Test finding related documents.
-        """
         related_doc = Document(
             title="Budget Planning",
             content="This document covers budget planning for the financial year.",

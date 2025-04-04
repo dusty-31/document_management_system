@@ -2,7 +2,6 @@ import pytest
 
 from enums import WorkflowStatusEnum, DocumentStatusEnum, DocumentTypeEnum, PositionEnum
 from models.workflow import Workflow
-from models.document import Document
 
 
 class TestWorkflow:

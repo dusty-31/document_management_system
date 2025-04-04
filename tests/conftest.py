@@ -29,7 +29,7 @@ def user(user_data):
         username=user_data['username'],
         password=user_data['password'],
         position=user_data['position'],
-        department=None,  # Изначально без отдела
+        department=None,
         access_level=user_data['access_level'],
     )
     return user

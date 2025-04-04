@@ -12,9 +12,6 @@ class TestExternalIntegration:
         return ExternalIntegration()
 
     def test_export_document(self, external_integration, document, user):
-        """
-        Test exporting document to external system.
-        """
         result = external_integration.export_document(document, 'system1', user)
 
         assert result['success'] is True
@@ -25,9 +22,6 @@ class TestExternalIntegration:
         )
 
     def test_import_document(self, external_integration, user):
-        """
-        Test importing document from external system.
-        """
         document = external_integration.import_document('crm', 'external_id_123', user)
 
         assert document is not None
