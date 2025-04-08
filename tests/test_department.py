@@ -45,9 +45,6 @@ class TestDepartment:
         assert len(department.members) == initial_members_count - 1
 
     def test_remove_nonexistent_member(self, department, second_user):
-        """
-        Test removing a user who is not a member of the department.
-        """
         with pytest.raises(ValueError) as error:
             department.remove_member(second_user)
 

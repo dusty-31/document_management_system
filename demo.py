@@ -3,8 +3,7 @@ from datetime import datetime, timedelta
 from document_management_system import DocumentManagementSystem
 from models.user import User
 from models.department import Department
-from enums import AccessLevelEnum, DocumentTypeEnum, DocumentStatusEnum, PositionEnum, WorkflowStatusEnum, \
-    ReportTypeEnum
+from enums import AccessLevelEnum, DocumentTypeEnum, DocumentStatusEnum, PositionEnum, ReportTypeEnum
 
 
 def run_demo():

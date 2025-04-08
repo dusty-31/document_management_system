@@ -149,10 +149,6 @@ class TestDocumentManagementSystem:
         assert report_workflow in report_workflows
 
     def test_create_document_with_version_control(self, dms, user):
-        """
-        Test that a new document is automatically initialized with version control.
-        """
-
         dms.add_user(user)
         document = dms.create_document(
             title="Version Control Test",
@@ -168,9 +164,6 @@ class TestDocumentManagementSystem:
         assert any("Version control system initialized" in entry["entry_message"] for entry in document.history)
 
     def test_create_branch(self, dms, user):
-        """
-        Test creating a branch through DMS.
-        """
         dms.add_user(user)
         document = dms.create_document(
             title="Branch Test",
@@ -188,9 +181,6 @@ class TestDocumentManagementSystem:
         assert any("Branch 'feature' created by" in entry["entry_message"] for entry in document.history)
 
     def test_commit_changes(self, dms, user):
-        """
-        Test committing changes through DMS.
-        """
         dms.add_user(user)
         document = dms.create_document(
             title="Commit Test",
@@ -209,9 +199,6 @@ class TestDocumentManagementSystem:
         assert any("Version 2 saved in branch 'main'" in entry["entry_message"] for entry in document.history)
 
     def test_merge_branches(self, dms, user):
-        """
-        Test merging branches through DMS.
-        """
         dms.add_user(user)
         document = dms.create_document(
             title="Merge Test",
@@ -236,9 +223,6 @@ class TestDocumentManagementSystem:
         assert any("Merged branch 'feature' into 'main'" in entry["entry_message"] for entry in document.history)
 
     def test_get_document_history(self, dms, user):
-        """
-        Test getting document history through DMS.
-        """
         dms.add_user(user)
         document = dms.create_document(
             title="History Test",
@@ -266,9 +250,6 @@ class TestDocumentManagementSystem:
         assert history[2]["description"] == "Second change"
 
     def test_export_document_to_external_system(self, dms, document, user):
-        """
-        Test exporting document to external system through DMS.
-        """
         dms.add_user(user)
         dms._documents.append(document)
         result = dms.export_document_to_external_system(document, 'system1', user)
@@ -280,9 +261,6 @@ class TestDocumentManagementSystem:
         )
 
     def test_import_document_from_external_system(self, dms, user, document):
-        """
-        Test importing document from external system through DMS.
-        """
         dms.add_user(user)
 
         initial_document_count = len(dms._documents)
