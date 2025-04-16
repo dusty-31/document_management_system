@@ -36,16 +36,19 @@ class Search:
         """
         Set search criteria.
         """
+
         self.criteria = criteria
 
     def add_criteria(self, key: str, value: str) -> None:
         """
         Add a single search criterion.
         """
+
         self.criteria[key] = value
 
     def clear_criteria(self) -> None:
         """
         Clear all search criteria.
         """
+
         self.criteria = {}
