@@ -18,26 +18,46 @@ class TestDocumentManagementSystem:
         assert dms is dms2
 
     def test_add_user(self, dms, user):
+        """
+        Test adding a user to the main system.
+        """
+
         dms.add_user(user)
         assert user in dms._users
 
     def test_add_duplicate_user(self, dms, user):
+        """
+        Test adding a duplicate user to the main system.
+        """
+
         dms.add_user(user)
         with pytest.raises(ValueError) as error:
             dms.add_user(user)
         assert "User already exists." in str(error.value)
 
     def test_remove_user(self, dms, user):
+        """
+        Test removing a user from the main system.
+        """
+
         dms.add_user(user)
         result = dms.remove_user(user.id)
         assert result is True
         assert user not in dms._users
 
     def test_remove_nonexistent_user(self, dms):
+        """
+        Test removing a user that does not exist in the system.
+        """
+
         result = dms.remove_user(999)
         assert result is False
 
     def test_create_document(self, dms, user):
+        """
+        Test creating a document in the main system.
+        """
+
         dms.add_user(user)
         document = dms.create_document(
             title="Test Document",
@@ -52,6 +72,10 @@ class TestDocumentManagementSystem:
         assert document.author == user
 
     def test_assign_task(self, dms, user, document):
+        """
+        Test assigning a task to a user for a specific document.
+        """
+
         dms.add_user(user)
         deadline = datetime.now() + timedelta(days=7)
 
@@ -67,6 +91,10 @@ class TestDocumentManagementSystem:
         assert task.deadline == deadline
 
     def test_generate_report(self, dms, document, user):
+        """
+        Test generating a report for a specific document.
+        """
+
         dms.add_user(user)
         dms._documents.append(document)
 
@@ -84,6 +112,10 @@ class TestDocumentManagementSystem:
         assert report.period == (start_date, end_date)
 
     def test_create_workflow(self, dms):
+        """
+        Test creating a workflow for a specific document type.
+        """
+
         workflow_steps = [
             {"step": "Review", "status": DocumentStatusEnum.REVIEW},
             {"step": "Approve", "status": DocumentStatusEnum.APPROVAL},
@@ -102,6 +134,10 @@ class TestDocumentManagementSystem:
         assert workflow.status == WorkflowStatusEnum.IN_PROGRESS
 
     def test_assign_workflow_to_document(self, dms, document, user):
+        """
+        Test assigning a workflow to a specific document.
+        """
+
         dms.add_user(user)
         dms._documents.append(document)
 
@@ -123,6 +159,10 @@ class TestDocumentManagementSystem:
         assert user.username in document.history[-1]["entry_message"]
 
     def test_get_workflows_by_document_type(self, dms):
+        """
+        Test retrieving workflows by document type.
+        """
+
         contract_workflow1 = dms.create_workflow(
             DocumentTypeEnum.CONTRACT,
             [{"step": "Review", "status": DocumentStatusEnum.REVIEW}]
@@ -149,6 +189,10 @@ class TestDocumentManagementSystem:
         assert report_workflow in report_workflows
 
     def test_create_document_with_version_control(self, dms, user):
+        """
+        Test creating a document with version control enabled.
+        """
+
         dms.add_user(user)
         document = dms.create_document(
             title="Version Control Test",
@@ -164,6 +208,10 @@ class TestDocumentManagementSystem:
         assert any("Version control system initialized" in entry["entry_message"] for entry in document.history)
 
     def test_create_branch(self, dms, user):
+        """
+        Test creating a branch from the main document version.
+        """
+
         dms.add_user(user)
         document = dms.create_document(
             title="Branch Test",
@@ -181,6 +229,10 @@ class TestDocumentManagementSystem:
         assert any("Branch 'feature' created by" in entry["entry_message"] for entry in document.history)
 
     def test_commit_changes(self, dms, user):
+        """
+        Test committing changes to the main document version.
+        """
+
         dms.add_user(user)
         document = dms.create_document(
             title="Commit Test",
@@ -199,6 +251,10 @@ class TestDocumentManagementSystem:
         assert any("Version 2 saved in branch 'main'" in entry["entry_message"] for entry in document.history)
 
     def test_merge_branches(self, dms, user):
+        """
+        Test merging changes from one branch into another.
+        """
+
         dms.add_user(user)
         document = dms.create_document(
             title="Merge Test",
@@ -223,6 +279,10 @@ class TestDocumentManagementSystem:
         assert any("Merged branch 'feature' into 'main'" in entry["entry_message"] for entry in document.history)
 
     def test_get_document_history(self, dms, user):
+        """
+        Test retrieving the version history of a document.
+        """
+
         dms.add_user(user)
         document = dms.create_document(
             title="History Test",
@@ -250,6 +310,10 @@ class TestDocumentManagementSystem:
         assert history[2]["description"] == "Second change"
 
     def test_export_document_to_external_system(self, dms, document, user):
+        """
+        Test exporting a document to an external system.
+        """
+
         dms.add_user(user)
         dms._documents.append(document)
         result = dms.export_document_to_external_system(document, 'system1', user)
@@ -261,6 +325,10 @@ class TestDocumentManagementSystem:
         )
 
     def test_import_document_from_external_system(self, dms, user, document):
+        """
+        Test importing a document from an external system.
+        """
+
         dms.add_user(user)
 
         initial_document_count = len(dms._documents)
