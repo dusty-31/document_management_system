@@ -6,6 +6,10 @@ from document_management_system import DocumentManagementSystem
 
 
 class TestDocumentManagementSystem:
+    """
+    Test suite for the Document Management System (DMS) class.
+    """
+
     @pytest.fixture
     def dms(self):
         # Reset singleton instance for each test
